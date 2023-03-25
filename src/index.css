@@ -8,4 +8,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+  background-color: #9281b9;
+  background-image: url(./img/waves.svg);
+  background-size: cover;
 }

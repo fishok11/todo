@@ -1,10 +1,13 @@
-// import React from 'react';
 import './index.css';
-import Todo from './features/todo/Todo';
+import Todo from './components/Todo';
+import Typography from '@mui/joy/Typography';
 
 function App() {
   return (
-    <Todo/>
+    <>
+      <Typography level="display2" sx={{ textAlign: 'center', marginBottom: '15px', color: '#F4EAFF' }}>Todo</Typography>
+      <Todo/>
+    </>
   )
 }
 
