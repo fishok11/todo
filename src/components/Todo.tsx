@@ -1,10 +1,10 @@
-import { useState, FC } from 'react';
+import { useState, FC, useEffect } from 'react';
 import { useAppSelector, useAppDispatch } from '../store/hooks';
 import {
-  // addTask,
   addTaskAsync,
-  selectTask,
-  TodoItem,
+  todo,
+  TodoItemDb,
+  uploadTask,
 } from '../store/todoSlice';
 
 import Input from '@mui/joy/Input';
@@ -13,14 +13,29 @@ import Box from '@mui/joy/Box';
 import TaskCard from './TaskCard'
 
 const Todo: FC = () => {
-  const state = useAppSelector(selectTask);
+  const state = useAppSelector(todo);
   const dispatch = useAppDispatch();
-  const [task, setTask] = useState('')
-  const tasks = state.tasks;
+  const [task, setTask] = useState('');
+  const [tasksDb, setTasksDb] = useState([]);
   const taskDb = {
     text: task,
     completed: false,
-  }
+  };
+  const onClick = () => {
+    dispatch(addTaskAsync(taskDb));
+    dispatch(uploadTask());
+    console.log(state);
+  };
+
+  useEffect(() => {
+    const getTasks = async() => {
+      const res = await fetch('http://localhost:3002/todo')
+      const data = await res.json()
+      setTasksDb(data);
+    };
+    getTasks()
+    .then(error => console.log(error))
+  }, [state.uploadTask]);
 
   return (
     <>
@@ -30,19 +45,19 @@ const Todo: FC = () => {
           disabled={false}
           size="md"
           variant="soft"
-          placeholder="Вводите здесь…"
+          placeholder="Type here…"
           value={task}
           onChange={(e) => setTask(e.target.value)}
         />
         <Button
           color="info"
           variant="soft"
-          onClick={() => dispatch(addTaskAsync(taskDb))}
-        >Добавить</Button>
+          onClick={() => onClick()}
+        >Add</Button>
       </Box>
       <Box sx={{ display: 'flex',flexDirection: 'column', gap: 2 }}>
-        {tasks.map((task: TodoItem) => 
-          <TaskCard key={task.text} text={task.text}/>
+        {tasksDb.map((task: TodoItemDb) => 
+          <TaskCard key={task.id} text={task.text} id={task.id}/>
         )}
       </Box>
     </>

@@ -17,9 +17,10 @@ import Checkbox from '@mui/joy/Checkbox';
 
 
 type TodoCardProps = { 
-  text: string 
+  text: string;
+  id: number; 
 };
-const TodoCard: FC<TodoCardProps> = ({text}) => {
+const TodoCard: FC<TodoCardProps> = ({text, id}) => {
   return (
     <Card variant="outlined" sx={{ padding: '4px 10px', backgroundColor: '#F4EAFF' }}>
       <Box sx={{ display: 'flex', gap: 2, justifyContent: 'space-between', alignItems: 'center' }}>
@@ -28,14 +29,14 @@ const TodoCard: FC<TodoCardProps> = ({text}) => {
           <Checkbox
             color="info"
             size="md"
-            variant="solid"
+            variant="outlined"
           />
           <Chip
             color="danger"
             onClick={function(){}}
             variant="plain"
           >
-            Удалить
+            Delete
           </Chip>
         </Box>
       </Box>
