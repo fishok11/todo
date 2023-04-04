@@ -8,27 +8,22 @@ import {
   // AppThunk 
 } from './store';
 import { 
-  addTask
+  addTask,
+  deleteTask,
+  completedTask,
 } from './todoAPI';
 
+//============================================================= ASYNC & TASK TYPES
+export type TodoItem = {
+  text: string;
+  completed: boolean;
+}
 
 export type TodoItemDb = {
   id: number;
   text: string;
   completed: boolean;
 }
-export type TodoItem = {
-  text: string;
-  completed: boolean;
-}
-export type TodoStateType = {
-  tasks: Array<TodoItem>;
-  uploadTask: boolean;
-}
-const initialState: TodoStateType = {
-  tasks: [],
-  uploadTask: false,
-};
 
 export const addTaskAsync = createAsyncThunk(
   'todo/addTask',
@@ -37,17 +32,39 @@ export const addTaskAsync = createAsyncThunk(
   }
 );
 
+export const deleteTaskAsync = createAsyncThunk(
+  'todo/addTask',
+  async (id: number) => {
+    deleteTask(id);
+  }
+);
+
+export const completedTaskAsync = createAsyncThunk(
+  'todo/addTask',
+  async (task: TodoItemDb) => {
+    completedTask(task);
+  }
+);  
+//============================================================= STATE
+export type TodoStateType = {
+  changeDb: boolean
+}
+
+const initialState: TodoStateType = {
+  changeDb: false,
+};
+
 export const todoSlice = createSlice({
   name: 'todo',
   initialState,
   reducers: {
-    uploadTask: (state) => {
-      state.uploadTask = !state.uploadTask
+    updateDb: (state) => {
+      state.changeDb = !state.changeDb;
     },
   }
 })
 
-export const { uploadTask } = todoSlice.actions;
+export const { updateDb } = todoSlice.actions;
 
 export const todo = (state: RootState) => state.todo;
 
