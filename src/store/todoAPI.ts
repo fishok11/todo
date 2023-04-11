@@ -1,9 +1,9 @@
 import { TodoItem, TodoItemDb } from "./todoSlice"
 import toast from 'react-hot-toast';
 
-export const addTask = (task: TodoItem) => {
+export const addTask = async(task: TodoItem) => {
   try {
-    fetch('http://localhost:3002/todo', {
+    await fetch('http://localhost:3002/todo', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json;charset=utf-8'
@@ -17,9 +17,9 @@ export const addTask = (task: TodoItem) => {
   }
 }
 
-export const deleteTask = (id: number) => {
+export const deleteTask = async(id: number) => {
   try {
-    fetch('http://localhost:3002/todo/' + id, {
+    await fetch('http://localhost:3002/todo/' + id, {
       method: 'DELETE',
     })
     toast.success('Task deleted!');
@@ -29,9 +29,9 @@ export const deleteTask = (id: number) => {
   }
 }
 
-export const completedTask = (task: TodoItemDb) => {
+export const completedTask = async(task: TodoItemDb) => {
   try {
-    fetch('http://localhost:3002/todo/' + task.id, {
+    await fetch('http://localhost:3002/todo/' + task.id, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json;charset=utf-8'
