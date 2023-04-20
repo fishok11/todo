@@ -28,14 +28,14 @@ const TodoCard: FC<TodoCardProps> = ({id, text, completed}) => {
   // const state = useAppSelector(todo)
   const [completedCheck, setCompletedCheck] = useState(completed)
   const dispatch = useAppDispatch();
-  const hendleChangeDelete = () => {
-    dispatch(deleteTaskAsync(id));
-    dispatch(updateDb());
-  };
   const task = {
     id: id,
     text: text,
     completed: !completedCheck,
+  };
+  const hendleChangeDelete = () => {
+    dispatch(deleteTaskAsync(id));
+    dispatch(updateDb());
   };
   const hendleChangeCompleted = (event: React.ChangeEvent<HTMLInputElement>) => {
     setCompletedCheck(event.target.checked);

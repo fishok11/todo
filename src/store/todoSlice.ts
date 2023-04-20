@@ -13,7 +13,7 @@ import {
   completedTask,
 } from './todoAPI';
 
-//============================================================= ASYNC & TASK TYPES
+//============================================================= TASK TYPES & ASYNC  
 export type TodoItem = {
   text: string;
   completed: boolean;
@@ -24,7 +24,7 @@ export type TodoItemDb = {
   text: string;
   completed: boolean;
 }
-
+//--------------------------------------------------------------
 export const addTaskAsync = createAsyncThunk(
   'todo/addTask',
   async (task: TodoItem) => {

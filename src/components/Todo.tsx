@@ -55,16 +55,18 @@ const Todo: FC = () => {
           error={errorInput}
           value={taskText}
           onChange={(e) => setTaskText(e.target.value)}
+          slotProps={{ input: { 'data-testid': 'input-todo' } }}
         />
         <Button
           color="info"
           variant="soft"
           onClick={() => hendleChangeAdd()}
+          data-testid='add-button'
         >Add</Button>
       </Box>
-      <Box sx={{ display: 'flex',flexDirection: 'column', gap: 2 }}>
+      <Box sx={{ display: 'flex',flexDirection: 'column', gap: 2 }} data-testid='todo-card-container'>
         {tasks.map((task: TodoItemDb) => 
-          <TaskCard key={task.id} id={task.id} text={task.text} completed={task.completed}/>
+          <TaskCard key={task.id} id={task.id} text={task.text} completed={task.completed} data-testid='todo-card'/>
         )}
       </Box>
     </>

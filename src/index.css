@@ -11,6 +11,7 @@ body {
   background-color: #9281b9;
   background-image: url(./img/waves.svg);
   background-size: cover;
+  background-position: bottom;
   font-family: 
   var(--joy-fontFamily-body, "Public Sans", 
     var(--joy-fontFamily-fallback, 

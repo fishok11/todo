@@ -1,9 +1,9 @@
 {
   "todo": [
     {
-      "text": "cascaca",
-      "completed": false,
-      "id": 1
+      "id": 1,
+      "text": "csdc",
+      "completed": true
     }
   ]
 }
