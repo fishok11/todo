@@ -1,52 +1,83 @@
-import { useState, FC, useEffect } from 'react';
-import { 
-  useAppSelector, 
-  useAppDispatch 
-} from '../store/hooks';
+import { useState, FC } from 'react';
+// import { 
+//   useAppSelector, 
+//   useAppDispatch 
+// } from '../store/hooks';
+// import {
+//   todo,
+// } from '../store/todoSlice';
 import {
-  updateDb, 
-  addTaskAsync,
-  todo,
-  TodoItemDb,
-} from '../store/todoSlice';
+  useGetTasksQuery,
+  useAddTaskMutation,
+} from '../store/todoAPI'
+import {
+  TaskDb,
+} from '../store/types';
 import Input from '@mui/joy/Input';
 import Button from '@mui/joy/Button';
 import Box from '@mui/joy/Box';
 import TaskCard from './TaskCard'
+import CircularProgress from '@mui/joy/CircularProgress';
+import toast from 'react-hot-toast';
+
+const styles = {
+  inputContainer: {
+    display: 'flex', 
+    gap: 2, 
+    marginBottom: '20px' 
+  },
+  tasksContainer: {
+    display: 'flex', 
+    flexDirection: 'column', 
+    gap: 2,
+  },
+  loading:{
+    display: 'flex', 
+    alignItems: 'center', 
+    justifyContent: 'center'
+  }
+}
 
 const Todo: FC = () => {
-  const state = useAppSelector(todo);
-  const dispatch = useAppDispatch();
-  const [taskText, setTaskText] = useState('');
-  const [tasks, setTasks] = useState([]);
-  const [errorInput, setErrorInput] = useState(false);
+  // const state = useAppSelector(todo);
+  // const dispatch = useAppDispatch();
+  const {data = [], isLoading} = useGetTasksQuery(); 
+  const [addTask, {isError}] = useAddTaskMutation();
+  const [taskText, setTaskText]  = useState<string>('');
+  const [errorInput, setErrorInput] = useState<boolean | undefined>(false);
   const task = {
     text: taskText,
     completed: false,
   };
-  const hendleChangeAdd = () => { 
+  const hendleChangeAdd = async() => { 
     if (taskText === '') {
       setErrorInput(true);
     } else {
-      dispatch(addTaskAsync(task));
-      dispatch(updateDb());
+      await addTask(task).unwrap();
+      toast.success('Task added!');
       setTaskText('');
     }
   };
 
-  useEffect(() => {
-    const getTasks = async() => {
-      const res = await fetch('http://localhost:3002/todo')
-      const data = await res.json()
-      setTasks(data);
-    };
-    getTasks()
-    .catch(error => console.log(error))
-  }, [state.changeDb]);
+  if (isLoading) {
+    return (
+      <Box sx={styles.loading}>
+        <CircularProgress
+          color="info"
+          determinate={false}
+          size="md"
+          value={15}
+          variant="plain"
+        />
+      </Box>
+    )
+  } 
+
+  if (isError) toast.error('Error!');
 
   return (
     <>
-      <Box sx={{ display: 'flex', gap: 2, marginBottom: '20px' }}>
+      <Box sx={styles.inputContainer}>
         <Input
           color={errorInput === true ? "danger" : "info"}
           size="md"
@@ -64,8 +95,8 @@ const Todo: FC = () => {
           data-testid='add-button'
         >Add</Button>
       </Box>
-      <Box sx={{ display: 'flex',flexDirection: 'column', gap: 2 }} data-testid='todo-card-container'>
-        {tasks.map((task: TodoItemDb) => 
+      <Box sx={styles.tasksContainer} data-testid='todo-card-container'>
+        {data.map((task: TaskDb) => 
           <TaskCard key={task.id} id={task.id} text={task.text} completed={task.completed} data-testid='todo-card'/>
         )}
       </Box>

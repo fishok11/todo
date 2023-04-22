@@ -1,51 +1,46 @@
+import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { Task, TaskDb } from "./types";
 
-import { TodoItem, TodoItemDb } from "./todoSlice"
-import toast from 'react-hot-toast';
+type TasksResponse = TaskDb[]
 
-export const addTask = async(task: TodoItem) => {
-  try {
-    const res = await fetch('http://localhost:3002/todo', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json;charset=utf-8'
-      },
-      body: JSON.stringify(task)
+export const todoApi = createApi({
+  reducerPath: 'todoApi',
+  tagTypes: ['Tasks'],
+  baseQuery: fetchBaseQuery({baseUrl: 'http://localhost:3002/'}),
+  endpoints: (build) => ({
+    getTasks: build.query<TasksResponse, void>({
+      query: () => `todo`,
+      providesTags: (result) => result
+        ? [
+          ...result.map(({ id }) => ({ type: 'Tasks' as const, id })),
+            { type: 'Tasks', id: 'LIST' },
+          ]
+        : [{ type: 'Tasks', id: 'LIST' }],
+    }),
+    addTask: build.mutation<Task, Partial<Task>>({
+      query: (body) => ({
+        url: 'todo',
+        method: 'POST',
+        body,
+      }),
+      invalidatesTags: [{type: 'Tasks', id: 'LIST'}]
+    }),
+    completedTask: build.mutation<TaskDb, Partial<TaskDb>>({
+      query: (body) => ({
+        url: `todo/${body.id}`,
+        method: 'PUT',
+        body,
+      }),
+      invalidatesTags: [{type: 'Tasks', id: 'LIST'}]
+    }),
+    deleteTask: build.mutation({
+      query: (id) => ({
+        url: `todo/${id}`,
+        method: 'DELETE',
+      }),
+      invalidatesTags: [{type: 'Tasks', id: 'LIST'}]
     })
-    const data = await res.json();
-    toast.success('Task added!');
-    return data;
-  } catch (error) {
-    console.log(error);
-    toast.error('Error!');
-  }
-}
+  })
+});
 
-export const deleteTask = async(id: number) => {
-  try {
-    await fetch('http://localhost:3002/todo/' + id, {
-      method: 'DELETE',
-    })
-    toast.success('Task deleted!');
-  } catch (error) {
-    console.log(error);
-    toast.error('Error!');
-  }
-}
-
-export const completedTask = async(task: TodoItemDb) => {
-  try {
-    const res = await fetch('http://localhost:3002/todo/' + task.id, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json;charset=utf-8'
-      },
-      body: JSON.stringify(task)
-    })
-    const data = await res.json();
-    toast.success('Task completed!');
-    return data;
-  } catch (error) {
-    console.log(error);
-    toast.error('Error!');
-  }
-}
+export const {useGetTasksQuery, useAddTaskMutation, useCompletedTaskMutation, useDeleteTaskMutation} = todoApi;
