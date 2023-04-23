@@ -1,5 +1,5 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import { Task, TaskDb } from "./types";
+import { TaskDb } from "./types";
 
 type TasksResponse = TaskDb[]
 
@@ -8,8 +8,8 @@ export const todoApi = createApi({
   tagTypes: ['Tasks'],
   baseQuery: fetchBaseQuery({baseUrl: 'http://localhost:3002/'}),
   endpoints: (build) => ({
-    getTasks: build.query<TasksResponse, void>({
-      query: () => `todo`,
+    getTasks: build.query<TasksResponse, number>({
+      query: (limit) => `todo?${`_limit=${limit}`}`,
       providesTags: (result) => result
         ? [
           ...result.map(({ id }) => ({ type: 'Tasks' as const, id })),
@@ -17,7 +17,7 @@ export const todoApi = createApi({
           ]
         : [{ type: 'Tasks', id: 'LIST' }],
     }),
-    addTask: build.mutation<Task, Partial<Task>>({
+    addTask: build.mutation<TaskDb, Partial<TaskDb>>({
       query: (body) => ({
         url: 'todo',
         method: 'POST',
@@ -25,7 +25,7 @@ export const todoApi = createApi({
       }),
       invalidatesTags: [{type: 'Tasks', id: 'LIST'}]
     }),
-    completedTask: build.mutation<TaskDb, Partial<TaskDb>>({
+    completedTask: build.mutation<TaskDb, TaskDb>({
       query: (body) => ({
         url: `todo/${body.id}`,
         method: 'PUT',

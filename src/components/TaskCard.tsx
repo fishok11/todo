@@ -10,17 +10,18 @@ import {
   useDeleteTaskMutation,
   useCompletedTaskMutation,
 } from '../store/todoAPI';
+import Box from '@mui/joy/Box';
 import Card from '@mui/joy/Card';
 import Chip from '@mui/joy/Chip';
 import Typography from '@mui/joy/Typography';
-import Box from '@mui/joy/Box';
 import Checkbox from '@mui/joy/Checkbox';
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import toast from 'react-hot-toast';
 
 const styles = {
   card: {
     padding: '4px 10px', 
-    backgroundColor: '#F4EAFF', 
+    backgroundColor: '#F4EAFF',
   },
   defaultContainer: {
     display: 'flex', 
@@ -65,7 +66,6 @@ const TodoCard: FC<TodoCardProps> = ({id, text, completed}) => {
   return (
     <Card variant="outlined" sx={styles.card}>
       <Box sx={styles.defaultContainer}>
-        <Typography level="body1" sx={styles.textStyles}>{text}</Typography>
         <Box sx={styles.defaultContainer}>
           <Checkbox
             color="info"
@@ -74,14 +74,15 @@ const TodoCard: FC<TodoCardProps> = ({id, text, completed}) => {
             checked={completed}
             onChange={(e) => hendleChangeCompleted(e)}
           />
-          <Chip
-            color="danger"
-            variant="plain"
-            onClick={() => hendleChangeDelete()}
-          >
-            Delete
-          </Chip>
+          <Typography level="body1" sx={styles.textStyles}>{text}</Typography>
         </Box>
+        <Chip
+          color="danger"
+          variant="plain"
+          onClick={() => hendleChangeDelete()}
+        >
+          <DeleteOutlineIcon/>
+        </Chip>
       </Box>
     </Card>
   );

@@ -7,7 +7,7 @@ import {
 } from './store';
 
 //============================================================= STATE
-export type TodoStateType = {}
+type TodoStateType = {}
 
 const initialState: TodoStateType = {};
 

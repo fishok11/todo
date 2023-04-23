@@ -13,23 +13,30 @@ import {
 import {
   TaskDb,
 } from '../store/types';
+import Box from '@mui/joy/Box';
+import Chip from '@mui/joy/Chip';
 import Input from '@mui/joy/Input';
 import Button from '@mui/joy/Button';
-import Box from '@mui/joy/Box';
 import TaskCard from './TaskCard'
 import CircularProgress from '@mui/joy/CircularProgress';
 import toast from 'react-hot-toast';
 
 const styles = {
+  gContainer: {
+    display: 'flex', 
+    flexDirection: 'column', 
+    alignItems: 'center',
+    gap: 2,
+  },
   inputContainer: {
     display: 'flex', 
     gap: 2, 
-    marginBottom: '20px' 
   },
   tasksContainer: {
     display: 'flex', 
     flexDirection: 'column', 
     gap: 2,
+    width: '100%'
   },
   loading:{
     display: 'flex', 
@@ -41,10 +48,12 @@ const styles = {
 const Todo: FC = () => {
   // const state = useAppSelector(todo);
   // const dispatch = useAppDispatch();
-  const {data = [], isLoading} = useGetTasksQuery(); 
+  const [limit, setLimit]  = useState<number>(4);
+  const {data = [], isLoading} = useGetTasksQuery(limit); 
   const [addTask, {isError}] = useAddTaskMutation();
   const [taskText, setTaskText]  = useState<string>('');
   const [errorInput, setErrorInput] = useState<boolean | undefined>(false);
+
   const task = {
     text: taskText,
     completed: false,
@@ -55,6 +64,7 @@ const Todo: FC = () => {
     } else {
       await addTask(task).unwrap();
       toast.success('Task added!');
+      setErrorInput(false);
       setTaskText('');
     }
   };
@@ -76,7 +86,7 @@ const Todo: FC = () => {
   if (isError) toast.error('Error!');
 
   return (
-    <>
+    <Box sx={styles.gContainer}>
       <Box sx={styles.inputContainer}>
         <Input
           color={errorInput === true ? "danger" : "info"}
@@ -95,12 +105,18 @@ const Todo: FC = () => {
           data-testid='add-button'
         >Add</Button>
       </Box>
-      <Box sx={styles.tasksContainer} data-testid='todo-card-container'>
+      <Box sx={styles.tasksContainer} data-testid='task-card-container'>
         {data.map((task: TaskDb) => 
-          <TaskCard key={task.id} id={task.id} text={task.text} completed={task.completed} data-testid='todo-card'/>
+          <TaskCard key={task.id} id={task.id} text={task.text} completed={task.completed} data-testid='task-card'/>
         )}
       </Box>
-    </>
+      {data.length >= limit && (<Chip
+        color="info"
+        onClick={() => setLimit(limit + 4)}
+        size="sm"
+        variant="soft"
+      >Show more</Chip>)}
+    </Box>
   );
 }
 
