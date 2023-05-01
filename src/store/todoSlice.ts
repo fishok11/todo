@@ -17,6 +17,6 @@ export const todoSlice = createSlice({
   reducers: {}
 })
 
-export const todo = (state: RootState) => state.todo;
+export const todoState = (state: RootState) => state.todo;
 
 export default todoSlice.reducer;

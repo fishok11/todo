@@ -1,7 +1,7 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { TaskDb } from "./types";
 
-type TasksResponse = TaskDb[]
+export type TasksResponse = TaskDb[]
 
 export const todoApi = createApi({
   reducerPath: 'todoApi',

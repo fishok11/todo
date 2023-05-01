@@ -4,7 +4,7 @@ import { useState, FC } from 'react';
 //   useAppDispatch 
 // } from '../store/hooks';
 // import {
-//   todo,
+//   todoState,
 // } from '../store/todoSlice';
 import {
   useGetTasksQuery,
@@ -46,10 +46,10 @@ const styles = {
 }
 
 const Todo: FC = () => {
-  // const state = useAppSelector(todo);
+  // const state = useAppSelector(todoState);
   // const dispatch = useAppDispatch();
   const [limit, setLimit]  = useState<number>(4);
-  const {data = [], isLoading} = useGetTasksQuery(limit); 
+  const {data = [], isLoading, isSuccess} = useGetTasksQuery(limit); 
   const [addTask, {isError}] = useAddTaskMutation();
   const [taskText, setTaskText]  = useState<string>('');
   const [errorInput, setErrorInput] = useState<boolean | undefined>(false);
@@ -105,17 +105,17 @@ const Todo: FC = () => {
           data-testid='add-button'
         >Add</Button>
       </Box>
-      <Box sx={styles.tasksContainer} data-testid='task-card-container'>
+      {isSuccess && (<Box sx={styles.tasksContainer} data-testid='task-card-container'>
         {data.map((task: TaskDb) => 
           <TaskCard key={task.id} id={task.id} text={task.text} completed={task.completed} data-testid='task-card'/>
         )}
-      </Box>
+      </Box>)}
       {data.length >= limit && (<Chip
         color="info"
         onClick={() => setLimit(limit + 4)}
         size="sm"
         variant="soft"
-      >Show more</Chip>)}
+      >Show {limit + 4}</Chip>)}
     </Box>
   );
 }

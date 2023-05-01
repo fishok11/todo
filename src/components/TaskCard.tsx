@@ -41,7 +41,7 @@ type TodoCardProps = {
 };
 
 const TodoCard: FC<TodoCardProps> = ({id, text, completed}) => {
-  // const state = useAppSelector(todo)
+  // const state = useAppSelector(todoState)
   // const dispatch = useAppDispatch();
   const [deleteTask] = useDeleteTaskMutation();
   const [completedTask, {isError}] = useCompletedTaskMutation();
