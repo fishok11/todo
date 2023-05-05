@@ -21,6 +21,8 @@ import Typography from '@mui/joy/Typography';
 import Checkbox from '@mui/joy/Checkbox';
 import Menu from '@mui/joy/Menu';
 import MenuItem from '@mui/joy/MenuItem';
+import ListItemDecorator from '@mui/joy/ListItemDecorator';
+import ListDivider from '@mui/joy/ListDivider';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import EditIcon from '@mui/icons-material/Edit';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
@@ -28,7 +30,7 @@ import toast from 'react-hot-toast';
 
 const styles = {
   card: {
-    padding: '4px 10px', 
+    padding: '6px 10px', 
     backgroundColor: '#F4EAFF',
   },
   defaultContainer: {
@@ -39,6 +41,9 @@ const styles = {
   },
   textStyles:{
     color: '#5F35AE'
+  },
+  icoStyles: {
+    fontSize: 'medium'
   }
 }
 
@@ -66,13 +71,26 @@ const TodoCard: FC<TodoCardProps> = ({id, text, completed}) => {
   };
   const hendleChangeEdit = async() => {
     dispatch(editTask({id: id, text: text, completed: completed}));
+    handleClose();
   };
   const hendleChangeDelete = async() => {
     await deleteTask(id).unwrap();
     toast.success('Task deleted!');
+    handleClose();
   };
 
-  if (isError) toast.error('Error!');
+  const [menuItems, setMenuItems] = useState<null | HTMLElement>(null);
+  const open = Boolean(menuItems);
+  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+    setMenuItems(event.currentTarget);
+  };
+  const handleClose = () => {
+    setMenuItems(null);
+  };
+
+  if (isError) {
+    toast.error('Error!');
+  }
 
   return (
     <Card variant="outlined" sx={styles.card}>
@@ -91,25 +109,43 @@ const TodoCard: FC<TodoCardProps> = ({id, text, completed}) => {
           <Chip
             id="button"
             variant="plain"
+            aria-controls={open ? 'basic-menu' : undefined}
+            aria-haspopup="true"
+            aria-expanded={open ? 'true' : undefined}
+            color="info"
+            size="sm"
+            onClick={handleClick}
           >
             <MoreHorizIcon/>
           </Chip>
           <Menu
+            id="menu"
+            anchorEl={menuItems}
+            open={open}
+            onClose={handleClose}
             aria-labelledby="button"
+            color="info"
+            variant="outlined"
           >
             <MenuItem
-              color="danger"
               variant="plain"
               onClick={() => hendleChangeEdit()}
             >
-              <EditIcon/>
+              <ListItemDecorator >
+                <EditIcon sx={styles.icoStyles}/>
+              </ListItemDecorator>{' '}
+              Edit
             </MenuItem>
+            <ListDivider/>
             <MenuItem
               color="danger"
               variant="plain"
               onClick={() => hendleChangeDelete()}
             >
-              <DeleteOutlineIcon/>
+              <ListItemDecorator sx={{ color: 'inherit' }}>
+                <DeleteOutlineIcon sx={styles.icoStyles}/>
+              </ListItemDecorator>{'  '}
+              Delete
             </MenuItem>
           </Menu>
         </Box>

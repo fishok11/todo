@@ -136,7 +136,7 @@ const Todo: FC = () => {
         onClick={() => setLimit(limit + 4)}
         size="sm"
         variant="soft"
-      >Show {limit + 4}</Chip>)}
+      >Show more</Chip>)}
     </Box>
   );
 }
