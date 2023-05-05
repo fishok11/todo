@@ -1,5 +1,5 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import { TaskDb } from "./types";
+import { TaskDb, TaskDbEdit } from "./types";
 
 export type TasksResponse = TaskDb[]
 
@@ -33,6 +33,14 @@ export const todoApi = createApi({
       }),
       invalidatesTags: [{type: 'Tasks', id: 'LIST'}]
     }),
+    editTask: build.mutation<TaskDb, TaskDbEdit>({
+      query: (body) => ({
+        url: `todo/${body.id}`,
+        method: 'PUT',
+        body,
+      }),
+      invalidatesTags: [{type: 'Tasks', id: 'LIST'}]
+    }),
     deleteTask: build.mutation({
       query: (id) => ({
         url: `todo/${id}`,
@@ -43,4 +51,4 @@ export const todoApi = createApi({
   })
 });
 
-export const {useGetTasksQuery, useAddTaskMutation, useCompletedTaskMutation, useDeleteTaskMutation} = todoApi;
+export const {useGetTasksQuery, useAddTaskMutation, useCompletedTaskMutation, useEditTaskMutation, useDeleteTaskMutation} = todoApi;

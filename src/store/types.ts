@@ -3,3 +3,9 @@ export type TaskDb = {
   text: string;
   completed: boolean;
 }
+
+export type TaskDbEdit = {
+  id: number | null;
+  text: string;
+  completed: boolean;
+}

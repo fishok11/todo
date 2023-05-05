@@ -1,14 +1,20 @@
-import { useState, FC } from 'react';
-// import { 
-//   useAppSelector, 
-//   useAppDispatch 
-// } from '../store/hooks';
-// import {
-//   todoState,
-// } from '../store/todoSlice';
+import { 
+  useState, 
+  FC, 
+  useEffect 
+} from 'react';
+import { 
+  useAppSelector, 
+  useAppDispatch 
+} from '../store/hooks';
+import {
+  todoState,
+  removeState,
+} from '../store/todoSlice';
 import {
   useGetTasksQuery,
   useAddTaskMutation,
+  useEditTaskMutation,
 } from '../store/todoAPI'
 import {
   TaskDb,
@@ -46,21 +52,32 @@ const styles = {
 }
 
 const Todo: FC = () => {
-  // const state = useAppSelector(todoState);
-  // const dispatch = useAppDispatch();
+  const state = useAppSelector(todoState);
+  const dispatch = useAppDispatch();
   const [limit, setLimit]  = useState<number>(4);
-  const {data = [], isLoading, isSuccess} = useGetTasksQuery(limit); 
+  const {data = [], isLoading, isSuccess, error} = useGetTasksQuery(limit); 
   const [addTask, {isError}] = useAddTaskMutation();
+  const [editTaskDb] = useEditTaskMutation()
   const [taskText, setTaskText]  = useState<string>('');
   const [errorInput, setErrorInput] = useState<boolean | undefined>(false);
-
   const task = {
     text: taskText,
     completed: false,
   };
+  const taskEdit = {
+    id: state.id,
+    text: taskText,
+    completed: state.completed,
+  };
   const hendleChangeAdd = async() => { 
     if (taskText === '') {
       setErrorInput(true);
+    } else if (state.id !== null) {
+      await editTaskDb(taskEdit).unwrap()
+      toast.success('Task edit!');
+      setErrorInput(false);
+      setTaskText('');
+      dispatch(removeState())
     } else {
       await addTask(task).unwrap();
       toast.success('Task added!');
@@ -68,6 +85,10 @@ const Todo: FC = () => {
       setTaskText('');
     }
   };
+
+  useEffect(() => {
+    setTaskText(state.text);
+  }, [state.edit, state.text])
 
   if (isLoading) {
     return (
@@ -82,9 +103,9 @@ const Todo: FC = () => {
       </Box>
     )
   } 
-
-  if (isError) toast.error('Error!');
-
+  if (isError || error) {
+    toast.error('Error!');
+  }
   return (
     <Box sx={styles.gContainer}>
       <Box sx={styles.inputContainer}>
@@ -103,7 +124,7 @@ const Todo: FC = () => {
           variant="soft"
           onClick={() => hendleChangeAdd()}
           data-testid='add-button'
-        >Add</Button>
+        >{state.id !== null ? 'Save' : 'Add'}</Button>
       </Box>
       {isSuccess && (<Box sx={styles.tasksContainer} data-testid='task-card-container'>
         {data.map((task: TaskDb) => 

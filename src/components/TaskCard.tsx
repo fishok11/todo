@@ -2,10 +2,14 @@ import {
   useState, 
   FC 
 } from 'react';
-// import { 
-//   useAppSelector, 
-//   useAppDispatch 
-// } from '../store/hooks';
+import { 
+  // useAppSelector, 
+  useAppDispatch 
+} from '../store/hooks';
+import { 
+  // todoState,
+  editTask,
+} from '../store/todoSlice';
 import { 
   useDeleteTaskMutation,
   useCompletedTaskMutation,
@@ -15,7 +19,11 @@ import Card from '@mui/joy/Card';
 import Chip from '@mui/joy/Chip';
 import Typography from '@mui/joy/Typography';
 import Checkbox from '@mui/joy/Checkbox';
+import Menu from '@mui/joy/Menu';
+import MenuItem from '@mui/joy/MenuItem';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+import EditIcon from '@mui/icons-material/Edit';
+import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import toast from 'react-hot-toast';
 
 const styles = {
@@ -42,7 +50,7 @@ type TodoCardProps = {
 
 const TodoCard: FC<TodoCardProps> = ({id, text, completed}) => {
   // const state = useAppSelector(todoState)
-  // const dispatch = useAppDispatch();
+  const dispatch = useAppDispatch();
   const [deleteTask] = useDeleteTaskMutation();
   const [completedTask, {isError}] = useCompletedTaskMutation();
   const [completedCheck, setCompletedCheck] = useState(completed)
@@ -51,14 +59,17 @@ const TodoCard: FC<TodoCardProps> = ({id, text, completed}) => {
     text: text,
     completed: !completedCheck,
   };
-  const hendleChangeDelete = async() => {
-    await deleteTask(id).unwrap();
-    toast.success('Task deleted!');
-  };
   const hendleChangeCompleted = async(event: React.ChangeEvent<HTMLInputElement>) => {
     setCompletedCheck(event.target.checked);
     await completedTask(task).unwrap();
     toast.success('Task completed!');
+  };
+  const hendleChangeEdit = async() => {
+    dispatch(editTask({id: id, text: text, completed: completed}));
+  };
+  const hendleChangeDelete = async() => {
+    await deleteTask(id).unwrap();
+    toast.success('Task deleted!');
   };
 
   if (isError) toast.error('Error!');
@@ -76,13 +87,32 @@ const TodoCard: FC<TodoCardProps> = ({id, text, completed}) => {
           />
           <Typography level="body1" sx={styles.textStyles}>{text}</Typography>
         </Box>
-        <Chip
-          color="danger"
-          variant="plain"
-          onClick={() => hendleChangeDelete()}
-        >
-          <DeleteOutlineIcon/>
-        </Chip>
+        <Box sx={styles.defaultContainer}>
+          <Chip
+            id="button"
+            variant="plain"
+          >
+            <MoreHorizIcon/>
+          </Chip>
+          <Menu
+            aria-labelledby="button"
+          >
+            <MenuItem
+              color="danger"
+              variant="plain"
+              onClick={() => hendleChangeEdit()}
+            >
+              <EditIcon/>
+            </MenuItem>
+            <MenuItem
+              color="danger"
+              variant="plain"
+              onClick={() => hendleChangeDelete()}
+            >
+              <DeleteOutlineIcon/>
+            </MenuItem>
+          </Menu>
+        </Box>
       </Box>
     </Card>
   );
