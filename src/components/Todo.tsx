@@ -74,7 +74,7 @@ const Todo: FC = () => {
       setErrorInput(true);
     } else if (state.id !== null) {
       await editTaskDb(taskEdit).unwrap()
-      toast.success('Task edit!');
+      toast.success('Task has been edited!');
       setErrorInput(false);
       setTaskText('');
       dispatch(removeState())

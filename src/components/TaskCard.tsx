@@ -8,11 +8,11 @@ import {
 } from '../store/hooks';
 import { 
   // todoState,
-  editTask,
+  editTaskText,
 } from '../store/todoSlice';
 import { 
   useDeleteTaskMutation,
-  useCompletedTaskMutation,
+  useEditTaskMutation,
 } from '../store/todoAPI';
 import Box from '@mui/joy/Box';
 import Card from '@mui/joy/Card';
@@ -57,7 +57,7 @@ const TodoCard: FC<TodoCardProps> = ({id, text, completed}) => {
   // const state = useAppSelector(todoState)
   const dispatch = useAppDispatch();
   const [deleteTask] = useDeleteTaskMutation();
-  const [completedTask, {isError}] = useCompletedTaskMutation();
+  const [editTaskDb, {isError}] = useEditTaskMutation();
   const [completedCheck, setCompletedCheck] = useState(completed)
   const task = {
     id: id,
@@ -66,11 +66,11 @@ const TodoCard: FC<TodoCardProps> = ({id, text, completed}) => {
   };
   const hendleChangeCompleted = async(event: React.ChangeEvent<HTMLInputElement>) => {
     setCompletedCheck(event.target.checked);
-    await completedTask(task).unwrap();
+    await editTaskDb(task).unwrap();
     toast.success('Task completed!');
   };
   const hendleChangeEdit = async() => {
-    dispatch(editTask({id: id, text: text, completed: completed}));
+    dispatch(editTaskText({id: id, text: text, completed: completed}));
     handleClose();
   };
   const hendleChangeDelete = async() => {
@@ -108,7 +108,7 @@ const TodoCard: FC<TodoCardProps> = ({id, text, completed}) => {
         <Box sx={styles.defaultContainer}>
           <Chip
             id="button"
-            variant="plain"
+            variant="outlined"
             aria-controls={open ? 'basic-menu' : undefined}
             aria-haspopup="true"
             aria-expanded={open ? 'true' : undefined}
@@ -126,6 +126,7 @@ const TodoCard: FC<TodoCardProps> = ({id, text, completed}) => {
             aria-labelledby="button"
             color="info"
             variant="outlined"
+            placement="bottom-end"
           >
             <MenuItem
               variant="plain"
