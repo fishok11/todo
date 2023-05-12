@@ -50,6 +50,7 @@
       "last 1 safari version"
     ]
   },
+  "homepage": "https://fishok11.github.io/todo",
   "devDependencies": {
     "gh-pages": "^5.0.0",
     "jest-mock-fetch": "^2.0.5",
