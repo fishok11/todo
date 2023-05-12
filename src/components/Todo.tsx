@@ -36,6 +36,7 @@ const styles = {
   inputContainer: {
     display: 'flex', 
     gap: 2, 
+    width: '100%'
   },
   tasksContainer: {
     display: 'flex', 
