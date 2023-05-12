@@ -1,11 +1,16 @@
 export type TaskDb = {
-  id: number;
+  id: string;
+  text: string;
+  completed: boolean;
+}
+
+export type NewTaskDb = {
   text: string;
   completed: boolean;
 }
 
 export type TaskDbEdit = {
-  id: number | null;
+  id: string;
   text: string;
   completed: boolean;
 }

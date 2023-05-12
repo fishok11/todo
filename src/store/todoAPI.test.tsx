@@ -16,7 +16,7 @@ describe('todoApi', () => {
       return <Provider store={store}>{children}</Provider>
     };
 
-    const { result } = renderHook(() => useGetTasksQuery(4), { wrapper });
+    const { result } = renderHook(() => useGetTasksQuery(), { wrapper });
 
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
     

@@ -20,7 +20,6 @@ import {
   TaskDb,
 } from '../store/types';
 import Box from '@mui/joy/Box';
-import Chip from '@mui/joy/Chip';
 import Input from '@mui/joy/Input';
 import Button from '@mui/joy/Button';
 import TaskCard from './TaskCard'
@@ -54,8 +53,7 @@ const styles = {
 const Todo: FC = () => {
   const state = useAppSelector(todoState);
   const dispatch = useAppDispatch();
-  const [limit, setLimit]  = useState<number>(4);
-  const {data = [], isLoading, isSuccess, error} = useGetTasksQuery(limit); 
+  const {data = [], isLoading, isSuccess, error} = useGetTasksQuery(); 
   const [addTask, {isError}] = useAddTaskMutation();
   const [editTaskDb] = useEditTaskMutation()
   const [taskText, setTaskText]  = useState<string>('');
@@ -72,7 +70,7 @@ const Todo: FC = () => {
   const hendleChangeAdd = async() => { 
     if (taskText === '') {
       setErrorInput(true);
-    } else if (state.id !== null) {
+    } else if (state.id !== '') {
       await editTaskDb(taskEdit).unwrap()
       toast.success('Task has been edited!');
       setErrorInput(false);
@@ -83,7 +81,7 @@ const Todo: FC = () => {
       toast.success('Task added!');
       setErrorInput(false);
       setTaskText('');
-    }
+    };
   };
 
   useEffect(() => {
@@ -131,12 +129,6 @@ const Todo: FC = () => {
           <TaskCard key={task.id} id={task.id} text={task.text} completed={task.completed} data-testid='task-card'/>
         )}
       </Box>)}
-      {data.length >= limit && (<Chip
-        color="info"
-        onClick={() => setLimit(limit + 4)}
-        size="sm"
-        variant="soft"
-      >Show more</Chip>)}
     </Box>
   );
 }

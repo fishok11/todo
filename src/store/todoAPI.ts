@@ -1,43 +1,83 @@
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import { TaskDb, TaskDbEdit } from "./types";
+import { createApi, fakeBaseQuery  } from '@reduxjs/toolkit/query/react';
+import { TaskDb, NewTaskDb } from "./types";
+import db from '../firebase'; 
+import {
+  doc,
+  collection, 
+  addDoc, 
+  updateDoc,
+  getDocs, 
+  deleteDoc 
+} from 'firebase/firestore';
 
 export type TasksResponse = TaskDb[]
 
 export const todoApi = createApi({
   reducerPath: 'todoApi',
   tagTypes: ['Tasks'],
-  baseQuery: fetchBaseQuery({baseUrl: 'http://localhost:3002/'}),
+  baseQuery: fakeBaseQuery(),
   endpoints: (build) => ({
-    getTasks: build.query<TasksResponse, number>({
-      query: (limit) => `todo?${`_limit=${limit}`}`,
+    getTasks: build.query<TasksResponse, void>({
+      async queryFn() {
+        try {
+          const todoRef = collection(db, "todo");
+          const querySnaphot = await getDocs(todoRef);
+          let tasks: TasksResponse = [];
+          querySnaphot?.forEach((doc) => {
+            const task: TaskDb = {
+              id: doc.id,
+              text: doc.data().text,
+              completed: doc.data().completed,
+            }
+            tasks.push(task);
+          });
+          return { data: tasks };
+        } catch (error) {
+          return { error };
+        }
+      },
       providesTags: (result) => result
-        ? [
-          ...result.map(({ id }) => ({ type: 'Tasks' as const, id })),
-            { type: 'Tasks', id: 'LIST' },
-          ]
-        : [{ type: 'Tasks', id: 'LIST' }],
+      ? [
+        ...result.map(({ id }) => ({ type: 'Tasks' as const, id })),
+          { type: 'Tasks', id: 'LIST' },
+        ]
+      : [{ type: 'Tasks', id: 'LIST' }],
     }),
-    addTask: build.mutation<TaskDb, Partial<TaskDb>>({
-      query: (body) => ({
-        url: 'todo',
-        method: 'POST',
-        body,
-      }),
+    addTask: build.mutation<null, NewTaskDb>({
+      async queryFn(task)  {
+        try {
+          await addDoc(collection(db, "todo"), task); 
+          return { data: null };
+        } catch (error: any) {
+          console.error(error.message);
+          return { error: error.message };
+        }
+      },
       invalidatesTags: [{type: 'Tasks', id: 'LIST'}]
     }),
-    editTask: build.mutation<TaskDb, TaskDbEdit>({
-      query: (body) => ({
-        url: `todo/${body.id}`,
-        method: 'PUT',
-        body,
-      }),
+    editTask: build.mutation<null, TaskDb>({
+      async queryFn(task) {
+        try {
+          const docTask = doc(db, "todo", task.id);
+          await updateDoc(docTask, task);
+          return { data: null };
+        } catch (error: any) {
+          console.error(error.message);
+          return { error: error.message };
+        }
+      },
       invalidatesTags: [{type: 'Tasks', id: 'LIST'}]
     }),
-    deleteTask: build.mutation({
-      query: (id) => ({
-        url: `todo/${id}`,
-        method: 'DELETE',
-      }),
+    deleteTask: build.mutation<null, string>({
+      async queryFn(id) {
+        try {
+          await deleteDoc(doc(db, "todo", id));
+          return { data: null };
+        } catch (error: any) {
+          console.error(error.message);
+          return { error: error.message };
+        }
+      },
       invalidatesTags: [{type: 'Tasks', id: 'LIST'}]
     })
   })

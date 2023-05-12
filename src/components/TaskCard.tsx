@@ -48,7 +48,7 @@ const styles = {
 }
 
 type TodoCardProps = { 
-  id: number; 
+  id: string; 
   text: string;
   completed: boolean;
 };
@@ -67,7 +67,7 @@ const TodoCard: FC<TodoCardProps> = ({id, text, completed}) => {
   const hendleChangeCompleted = async(event: React.ChangeEvent<HTMLInputElement>) => {
     setCompletedCheck(event.target.checked);
     await editTaskDb(task).unwrap();
-    toast.success('Task completed!');
+    if (completedCheck === false) toast.success('Task completed!');
   };
   const hendleChangeEdit = async() => {
     dispatch(editTaskText({id: id, text: text, completed: completed}));

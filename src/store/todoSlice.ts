@@ -8,14 +8,14 @@ import {
 
 //============================================================= STATE
 type TodoStateType = {
-  id: number | null;
+  id: string;
   text: string;
   completed: boolean;
   edit: boolean;
 }
 
 const initialState: TodoStateType = {
-  id: null,
+  id: '',
   text: '',
   completed: false,
   edit: false,
@@ -25,7 +25,7 @@ export const todoSlice = createSlice({
   name: 'todo',
   initialState,
   reducers: {
-    editTaskText: (state, action: PayloadAction<{id: number, text: string, completed: boolean}>) => {
+    editTaskText: (state, action: PayloadAction<{id: string, text: string, completed: boolean}>) => {
       state.id = action.payload.id;
       state.text = action.payload.text;
       state.completed = action.payload.completed;
