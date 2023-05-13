@@ -1,4 +1,4 @@
-// import React from 'react';
+import { CookiesProvider } from 'react-cookie';
 import { createRoot } from 'react-dom/client';
 import { Provider } from 'react-redux';
 import { setupStore } from './store/store';
@@ -11,9 +11,11 @@ const root = createRoot(container);
 const store = setupStore();
 
 root.render(
-  <Provider store={store}>
-    <App />
-  </Provider>
+  <CookiesProvider>
+    <Provider store={store}>
+      <App />
+    </Provider>
+  </CookiesProvider>
 );
 
 // If you want to start measuring performance in your app, pass a function

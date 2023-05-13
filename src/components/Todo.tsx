@@ -1,8 +1,11 @@
 import { 
-  useState, 
   FC, 
-  useEffect 
+  useState, 
+  useEffect,
+  useMemo, 
 } from 'react';
+import useCookies from 'react-cookie/cjs/useCookies';
+import { v4 as uuidv4 } from 'uuid';
 import { 
   useAppSelector, 
   useAppDispatch 
@@ -54,7 +57,9 @@ const styles = {
 const Todo: FC = () => {
   const state = useAppSelector(todoState);
   const dispatch = useAppDispatch();
-  const {data = [], isLoading, isSuccess, error} = useGetTasksQuery(); 
+  const [cookies, setCookie] = useCookies(["user"]);
+  const cookieLifetime = useMemo(() =>  new Date('3000-12-17T03:24:00'), []);
+  const {data = [], isLoading, isSuccess, error} = useGetTasksQuery(cookies.user); 
   const [addTask, {isError}] = useAddTaskMutation();
   const [editTaskDb] = useEditTaskMutation()
   const [taskText, setTaskText]  = useState<string>('');
@@ -62,11 +67,13 @@ const Todo: FC = () => {
   const task = {
     text: taskText,
     completed: false,
+    userId: cookies.user,
   };
   const taskEdit = {
     id: state.id,
     text: taskText,
     completed: state.completed,
+    userId: cookies.user,
   };
   const hendleChangeAdd = async() => { 
     if (taskText === '') {
@@ -88,6 +95,11 @@ const Todo: FC = () => {
   useEffect(() => {
     setTaskText(state.text);
   }, [state.edit, state.text])
+  useEffect(() => {
+    if (cookies.user === undefined) {
+      setCookie("user", uuidv4(), { expires: cookieLifetime })
+    }
+  }, [cookies.user, setCookie, cookieLifetime])
 
   if (isLoading) {
     return (
@@ -123,11 +135,11 @@ const Todo: FC = () => {
           variant="soft"
           onClick={() => hendleChangeAdd()}
           data-testid='add-button'
-        >{state.id !== null ? 'Save' : 'Add'}</Button>
+        >{state.id !== '' ? 'Save' : 'Add'}</Button>
       </Box>
       {isSuccess && (<Box sx={styles.tasksContainer} data-testid='task-card-container'>
         {data.map((task: TaskDb) => 
-          <TaskCard key={task.id} id={task.id} text={task.text} completed={task.completed} data-testid='task-card'/>
+          <TaskCard key={task.id} id={task.id} text={task.text} completed={task.completed} userId={cookies.user} data-testid='task-card'/>
         )}
       </Box>)}
     </Box>

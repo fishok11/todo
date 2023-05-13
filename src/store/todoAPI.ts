@@ -1,5 +1,11 @@
-import { createApi, fakeBaseQuery  } from '@reduxjs/toolkit/query/react';
-import { TaskDb, NewTaskDb } from "./types";
+import { 
+  createApi, 
+  fakeBaseQuery, 
+} from '@reduxjs/toolkit/query/react';
+import { 
+  TaskDb, 
+  NewTaskDb, 
+} from "./types";
 import db from '../firebase'; 
 import {
   doc,
@@ -7,7 +13,9 @@ import {
   addDoc, 
   updateDoc,
   getDocs, 
-  deleteDoc 
+  deleteDoc,
+  query, 
+  where,
 } from 'firebase/firestore';
 
 export type TasksResponse = TaskDb[]
@@ -17,10 +25,10 @@ export const todoApi = createApi({
   tagTypes: ['Tasks'],
   baseQuery: fakeBaseQuery(),
   endpoints: (build) => ({
-    getTasks: build.query<TasksResponse, void>({
-      async queryFn() {
+    getTasks: build.query<TasksResponse, string>({
+      async queryFn(userId) {
         try {
-          const todoRef = collection(db, "todo");
+          const todoRef = query(collection(db, "todo"), where("userId", "==", userId));
           const querySnaphot = await getDocs(todoRef);
           let tasks: TasksResponse = [];
           querySnaphot?.forEach((doc) => {
@@ -28,6 +36,7 @@ export const todoApi = createApi({
               id: doc.id,
               text: doc.data().text,
               completed: doc.data().completed,
+              userId: doc.data().userId,
             }
             tasks.push(task);
           });

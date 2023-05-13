@@ -51,9 +51,10 @@ type TodoCardProps = {
   id: string; 
   text: string;
   completed: boolean;
+  userId: string;
 };
 
-const TodoCard: FC<TodoCardProps> = ({id, text, completed}) => {
+const TodoCard: FC<TodoCardProps> = ({id, text, completed, userId}) => {
   // const state = useAppSelector(todoState)
   const dispatch = useAppDispatch();
   const [deleteTask] = useDeleteTaskMutation();
@@ -63,6 +64,7 @@ const TodoCard: FC<TodoCardProps> = ({id, text, completed}) => {
     id: id,
     text: text,
     completed: !completedCheck,
+    userId: userId,
   };
   const hendleChangeCompleted = async(event: React.ChangeEvent<HTMLInputElement>) => {
     setCompletedCheck(event.target.checked);
