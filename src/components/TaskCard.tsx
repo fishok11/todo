@@ -110,7 +110,7 @@ const TodoCard: FC<TodoCardProps> = ({id, text, completed, userId}) => {
         <Box sx={styles.defaultContainer}>
           <Chip
             id="button"
-            variant="outlined"
+            variant="plain"
             aria-controls={open ? 'basic-menu' : undefined}
             aria-haspopup="true"
             aria-expanded={open ? 'true' : undefined}

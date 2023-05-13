@@ -35,10 +35,14 @@ const styles = {
     flexDirection: 'column', 
     alignItems: 'center',
     gap: 2,
+    width: '350px',
   },
   inputContainer: {
     display: 'flex', 
     gap: 2, 
+    width: '100%'
+  },
+  input: {
     width: '100%'
   },
   tasksContainer: {
@@ -58,8 +62,8 @@ const Todo: FC = () => {
   const state = useAppSelector(todoState);
   const dispatch = useAppDispatch();
   const [cookies, setCookie] = useCookies(["user"]);
-  const cookieLifetime = useMemo(() =>  new Date('3000-12-17T03:24:00'), []);
-  const {data = [], isLoading, isSuccess, error} = useGetTasksQuery(cookies.user); 
+  const cookiesLifetime = useMemo(() =>  new Date('3000-12-17T03:24:00'), []);
+  const {data = [], isLoading, isSuccess, error} = useGetTasksQuery(cookies.user !== undefined ? cookies.user : null); 
   const [addTask, {isError}] = useAddTaskMutation();
   const [editTaskDb] = useEditTaskMutation()
   const [taskText, setTaskText]  = useState<string>('');
@@ -97,11 +101,11 @@ const Todo: FC = () => {
   }, [state.edit, state.text])
   useEffect(() => {
     if (cookies.user === undefined) {
-      setCookie("user", uuidv4(), { expires: cookieLifetime })
+      setCookie("user", uuidv4(), { expires: cookiesLifetime })
     }
-  }, [cookies.user, setCookie, cookieLifetime])
+  }, [cookies.user, setCookie, cookiesLifetime])
 
-  if (isLoading) {
+  if (isLoading || cookies.user === undefined) {
     return (
       <Box sx={styles.loading}>
         <CircularProgress
@@ -113,10 +117,10 @@ const Todo: FC = () => {
         />
       </Box>
     )
-  } 
+  };
   if (isError || error) {
     toast.error('Error!');
-  }
+  };
   return (
     <Box sx={styles.gContainer}>
       <Box sx={styles.inputContainer}>
@@ -129,6 +133,7 @@ const Todo: FC = () => {
           value={taskText}
           onChange={(e) => setTaskText(e.target.value)}
           slotProps={{ input: { 'data-testid': 'input-todo' } }}
+          sx={styles.input}
         />
         <Button
           color="info"
